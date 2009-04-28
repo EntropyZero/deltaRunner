@@ -1,0 +1,2 @@
+Select @@Version
+GO

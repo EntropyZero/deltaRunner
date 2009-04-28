@@ -1,0 +1,1 @@
+INSERT INTO [asoidjaosijasoidj] (columnname)VALUES(1)

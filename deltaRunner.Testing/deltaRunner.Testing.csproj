@@ -1,0 +1,405 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D8F1989A-174C-4B01-BE95-AAADC50B7289}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>deltaRunner.Testing</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>EntropyZero.deltaRunner.Testing</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Data.SqliteClient, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\deltaRunner.Common\Referenced Dlls\Mono.Data.SqliteClient.dll</HintPath>
+    </Reference>
+    <Reference Include="NAnt.Core">
+      <Name>NAnt.Core</Name>
+      <HintPath>..\deltaRunner.Common\Referenced Dlls\NAnt.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <Name>nunit.framework</Name>
+      <HintPath>..\deltaRunner.Common\Referenced Dlls\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <ProjectReference Include="..\deltaRunner.Tasks\deltaRunner.Tasks.csproj">
+      <Name>deltaRunner.Tasks</Name>
+      <Project>{7372E1C5-9D0D-4B8A-AFB1-8A5D0C84B28C}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\deltaRunner\deltaRunner.csproj">
+      <Name>deltaRunner</Name>
+      <Project>{0556BC13-ED42-4C7F-AF5E-26657A3CA68B}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SkipingPostDeltas.cs" />
+    <Compile Include="DeltaFileTester.cs" />
+    <Compile Include="FullDeltaRunnerTest4.cs" />
+    <Compile Include="SqliteFullDeltaRunnerTest3.cs" />
+    <Compile Include="SqliteTestFixtureBase.cs" />
+    <Compile Include="SqliteDeltaRunnerTester.cs" />
+    <Compile Include="DeltaHashProviderTester.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="deltaRunnerConsoleTester.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="deltaRunnerTaskTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="deltaRunnerTester.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FullDeltaRunnerTest1.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FullDeltaRunnerTest2.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FullDeltaRunnerTest2b.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FullDeltaRunnerTest3.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FullDeltaRunnerTest3NoTrans.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestFixtureBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Content Include="TestFiles\Delta1\00001.sql" />
+    <Content Include="TestFiles\Delta1\00002.sql" />
+    <Content Include="TestFiles\Delta1\00003.sql" />
+    <Content Include="TestFiles\Delta2_BadDelta\00001.sql" />
+    <Content Include="TestFiles\Delta2_BadDelta\00002.sql" />
+    <Content Include="TestFiles\Delta2_BadDelta\00003.sql" />
+    <Content Include="TestFiles\Delta3\00001.sql" />
+    <Content Include="TestFiles\Delta3\00002.sql" />
+    <Content Include="TestFiles\Delta3\00003.sql" />
+    <Content Include="TestFiles\FullTest1\CreateDatabase.sql" />
+    <Content Include="TestFiles\FullTest1\Delta\00001.sql" />
+    <Content Include="TestFiles\FullTest1\Delta\00002.sql" />
+    <Content Include="TestFiles\FullTest1\Delta\00003.sql" />
+    <Content Include="TestFiles\FullTest1\Delta\00004.sql" />
+    <Content Include="TestFiles\FullTest1\PopulateDatabase.sql" />
+    <Content Include="TestFiles\FullTest1\RemoveDatabase.sql" />
+    <Content Include="TestFiles\FullTest2\CreateDatabase.sql" />
+    <Content Include="TestFiles\FullTest2\Delta2\00001.sql" />
+    <Content Include="TestFiles\FullTest2\Delta2\00002.sql" />
+    <Content Include="TestFiles\FullTest2\Delta2\00003.sql" />
+    <Content Include="TestFiles\FullTest2\Delta2\00004.sql" />
+    <Content Include="TestFiles\FullTest2\Delta\00001.sql" />
+    <Content Include="TestFiles\FullTest2\Delta\00002.sql" />
+    <Content Include="TestFiles\FullTest2\Delta\00003.sql" />
+    <Content Include="TestFiles\FullTest2\Delta\00004.sql" />
+    <Content Include="TestFiles\FullTest2\PopulateDatabase.sql" />
+    <Content Include="TestFiles\FullTest2\RemoveDatabase.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\addRole.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\CreateDatabase.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\Delta\00001.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\Delta\00002.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\Delta\00003.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\Delta\00004.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\Delta\00005.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\Delta\00006.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\Delta\00007.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\PopulateDatabase.sql" />
+    <Content Include="TestFiles\FullTest3NoTrans\RemoveDatabase.sql" />
+    <Content Include="TestFiles\FullTest3\CreateDatabase.sql" />
+    <Content Include="TestFiles\FullTest3\Delta\00001.sql" />
+    <Content Include="TestFiles\FullTest3\Delta\00002.sql" />
+    <Content Include="TestFiles\FullTest3\Delta\00003.sql" />
+    <Content Include="TestFiles\FullTest3\Delta\00004.sql" />
+    <Content Include="TestFiles\FullTest3\Delta\00005.sql" />
+    <Content Include="TestFiles\FullTest3\Delta\00006.sql" />
+    <Content Include="TestFiles\FullTest3\Delta\00007.sql" />
+    <Content Include="TestFiles\FullTest3\PopulateDatabase.sql" />
+    <Content Include="TestFiles\FullTest3\RemoveDatabase.sql" />
+    <Content Include="TestFiles\FullTest3_TimeTracker\00001.sql" />
+    <Content Include="TestFiles\FullTest3_TimeTracker\00002.sql" />
+    <Content Include="TestFiles\FullTest3_TimeTracker\00003.sql" />
+    <Content Include="TestFiles\SampleStaticFile1.sql" />
+    <Content Include="TestFiles\SampleStaticFile2.sql" />
+    <Content Include="TestFiles\SampleStaticFile3.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta1\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta1\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta1\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta2_BadDelta\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta2_BadDelta\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta2_BadDelta\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta3\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta3\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\Delta3\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest1\CreateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest1\Delta\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest1\Delta\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest1\Delta\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest1\Delta\00004.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest1\PopulateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest1\RemoveDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\CreateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta\00004.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta2\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta2\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta2\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\Delta2\00004.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\PopulateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest2\RemoveDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\CreateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\Delta\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\Delta\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\Delta\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\Delta\00004.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\Delta\00005.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\Delta\00006.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\Delta\00007.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\PopulateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3\RemoveDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3_TimeTracker\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3_TimeTracker\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3_TimeTracker\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\addRole.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\CreateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\Delta\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\Delta\00002.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\Delta\00003.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\Delta\00004.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\Delta\00005.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\Delta\00006.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\Delta\00007.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\PopulateDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\FullTest3NoTrans\RemoveDatabase.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\SampleStaticFile1.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\SampleStaticFile2.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\SampleStaticFile3.sql" />
+    <Content Include="TestFiles\DeltaFilesWithLetters\00002.sql" />
+    <Content Include="TestFiles\DeltaFilesWithLetters\00002aa.sql" />
+    <Content Include="TestFiles\DeltaFilesWithLetters\00002ab.sql" />
+    <Content Include="TestFiles\DeltaFilesWithLetters\00003.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasFullXml.sql" />
+    <Content Include="TestFiles\FullTest4\CreateDatabase.sql" />
+    <Content Include="TestFiles\FullTest4\Delta\00001.sql" />
+    <Content Include="TestFiles\FullTest4\Delta\00002.sql" />
+    <Content Include="TestFiles\FullTest4\Delta\00003.sql" />
+    <Content Include="TestFiles\FullTest4\Delta\00004.sql" />
+    <Content Include="TestFiles\FullTest4\Delta\00005.sql" />
+    <Content Include="TestFiles\FullTest4\Delta\00006.sql" />
+    <Content Include="TestFiles\FullTest4\Delta\00007.sql" />
+    <Content Include="TestFiles\FullTest4\PopulateDatabase.sql" />
+    <Content Include="TestFiles\FullTest4\PostDelta.sql" />
+    <Content Include="TestFiles\FullTest4\RemoveDatabase.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlWithMaySkipCategoriesButNoValue.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlWithCategoryNodeButNoValue.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlWithMaySkipCategories.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlWithUseTransaction.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlWithUseTransactionMaySkip.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlWithCategoryUseTransaction.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlWithCategory.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasXmlButNoChildNodes.sql" />
+    <Content Include="TestFiles\DeltaXML\DeltaHasNolXml.sql" />
+    <Content Include="TestFiles\DeltaFilesWithLetters\00001.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\Database.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqliteTestFiles\SqliteDatabase.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>IF NOT EXIST "$(TargetDir)sqlite3.dll" copy "$(SolutionDir)deltaRunner.Common\Referenced Dlls\sqlite3.dll" "$(TargetDir)sqlite3.dll"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

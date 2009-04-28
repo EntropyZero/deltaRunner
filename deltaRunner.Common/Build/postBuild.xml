@@ -1,0 +1,57 @@
+<project name="Horse Finder Network" default="build">
+	<property name="configuration" value="Release" />
+	<property name="DatabaseName" value="DeltaRunner" />
+	<property name="OutputDirectory" value="D:\BuildOutput\deltaRunner" />
+	<property name="CommonDirectory" value="D:\Build\Common" />
+	<target name="build" description="Build all targets.">
+		<call target="NUnit" />
+		<call target="Deploy.Solution" />
+	</target>
+  <target name="NUnit">
+		<echo message="NUnit Testing" />
+		<dataprofiler servername="(local)" username="test" password="test" action="PREPARE" fullfilterfilepath="${CCNetWorkingDirectory}/traceFile" maxfilesize="5" userloginfilter="test" />
+		<dataprofiler servername="(local)" username="test" password="test" action="START" fullfilterfilepath="${CCNetWorkingDirectory}/traceFile" maxfilesize="5" userloginfilter="test" />
+		<nunit2>
+			<formatter type="Xml" usefile="true" extension=".xml" outputdir="${CCNetWorkingDirectory}/Results" />
+			<test>
+				<assemblies>
+					<include name="${CCNetWorkingDirectory}/deltaRunner.Testing/bin/**/deltaRunner.Testing.dll" />
+				</assemblies>
+			</test>
+		</nunit2>
+		<dataprofiler servername="(local)" username="test" password="test" action="STOP" fullfilterfilepath="${CCNetWorkingDirectory}/traceFile" maxfilesize="5" userloginfilter="test" />
+		<dataprofiler servername="(local)" username="test" password="test" action="GENERATEREPORT" fullreportpath="${CCNetWorkingDirectory}/Results/dataProfiler-results.xml" fullfilterfilepath="${CCNetWorkingDirectory}/traceFile" maxfilesize="5" userloginfilter="test" />
+		<echo message="NUnit Testing Completed" />
+	</target>
+	<target name="Deploy.Solution">
+		<echo message="Deply to : ${OutputDirectory}" />
+		<delete dir="${OutputDirectory}" failonerror="false" />
+		<mkdir dir="${OutputDirectory}\Package" failonerror="false" />
+		<mkdir dir="${OutputDirectory}\Package\Nant" failonerror="false" />
+		<copy todir="${OutputDirectory}\Package" overwrite="true">
+			<fileset basedir="${CCNetWorkingDirectory}\DeltaRunner.Common\Documentation\">
+				<include name="**" />
+			</fileset>
+		</copy>
+		<copy todir="${OutputDirectory}\Package" overwrite="true">
+			<fileset basedir="${CCNetWorkingDirectory}\deltaRunnerUtil\bin\${configuration}">
+				<include name="**" />
+			</fileset>
+		</copy>
+		<copy todir="${OutputDirectory}\Package\Nant" overwrite="true">
+			<fileset basedir="${CCNetWorkingDirectory}\deltaRunner.Tasks\bin\${configuration}">
+				<include name="**" />
+			</fileset>
+		</copy>	
+		<attrib normal="true">
+			<fileset basedir="${OutputDirectory}\Package">				
+				<include name="**" />			
+			</fileset>
+		</attrib>
+		<zip zipfile="${OutputDirectory}\deltaRunner-${CCNetLabel}.zip">
+			<fileset basedir="${OutputDirectory}\Package">
+				<include name="**.*" />
+			</fileset>
+		</zip>	
+	</target>
+</project>

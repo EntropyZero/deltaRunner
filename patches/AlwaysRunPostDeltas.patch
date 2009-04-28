@@ -1,0 +1,96 @@
+Index: DeltaRunnerBase.cs
+===================================================================
+--- DeltaRunnerBase.cs	(revision 2241)
++++ DeltaRunnerBase.cs	(working copy)
+@@ -29,8 +29,10 @@
+ {
+     public abstract class DeltaRunnerBase
+     {
+-        #region Events
++    	public bool ShouldRunPostDeltasAllTheTime { get; set; }
+ 
++    	#region Events
++
+         public event ScriptExecution OnScriptExecution;
+         public event ScriptExecution OnAfterScriptExecution;
+         public event ScriptExecution OnSkipScriptExecution;
+@@ -74,7 +76,13 @@
+             this.verbose = verbose;
+         }
+ 
+-        public DeltaRunnerBase(string connectionString, string deltaPath, bool dropDbOnPreDeltaChange,
++		public DeltaRunnerBase(string connectionString, string deltaPath, bool verbose, bool shouldRunPostDeltasAllTheTime)
++            : this(connectionString, deltaPath, verbose)
++		{
++			ShouldRunPostDeltasAllTheTime = shouldRunPostDeltasAllTheTime;
++		}
++
++    	public DeltaRunnerBase(string connectionString, string deltaPath, bool dropDbOnPreDeltaChange,
+                                string masterConnectionString, string dbName, bool verbose)
+             : this(connectionString, deltaPath, verbose)
+         {
+@@ -346,7 +354,7 @@
+             {
+                 if (runningState.QueuedFiles != null ||
+                     (RunInDevelopmentMode && deltaFile.IsModified) ||
+-                    IsDeltaBiggerThen(deltaFile, runningState.LatestVersion) || runningState.LatestVersion == "0")
++                    IsDeltaBiggerThen(deltaFile, runningState.LatestVersion) || runningState.LatestVersion == "0" || (ShouldRunPostDeltasAllTheTime && deltaFile.Version == "-1"))
+                 {
+                     if (deltaFile.Version == "-2" && !runningState.HashProvider.IsNewDelta(deltaFile.Filename))
+                     {
+Index: DeltaRunnerFactory.cs
+===================================================================
+--- DeltaRunnerFactory.cs	(revision 2241)
++++ DeltaRunnerFactory.cs	(working copy)
+@@ -18,7 +18,6 @@
+             switch (deltaRunnerType)
+             {
+                 case DeltaRunnerType.Sqlite:
+-                    return (new SqliteDeltaRunner(connectionString, deltaPath));
+                 default:
+                     return (new SqlDeltaRunner(connectionString, deltaPath));
+             }
+@@ -29,12 +28,16 @@
+             return (new SqlDeltaRunner(connectionString, deltaPath, verbose));
+         }
+ 
++		public static DeltaRunnerBase CreateDeltaRunner(string connectionString, string deltaPath, bool verbose, bool shouldRunPostDeltasAllTheTime)
++        {
++			return (new SqlDeltaRunner(connectionString, deltaPath, verbose, shouldRunPostDeltasAllTheTime));
++        }
++
+         public static DeltaRunnerBase CreateDeltaRunner(string connectionString, string deltaPath, bool verbose, DeltaRunnerType deltaRunnerType)
+         {
+             switch (deltaRunnerType)
+             {
+                 case DeltaRunnerType.Sqlite:
+-                    return (new SqliteDeltaRunner(connectionString, deltaPath, verbose));
+                 default:
+                     return (new SqlDeltaRunner(connectionString, deltaPath, verbose));
+             }
+@@ -50,7 +53,6 @@
+             switch(deltaRunnerType)
+             {
+                 case DeltaRunnerType.Sqlite:
+-                    return (new SqliteDeltaRunner(connectionString, deltaPath, dropDbOnPreDeltaChange, masterConnectionString, dbName, verbose));
+             
+                 default:
+                     return (new SqlDeltaRunner(connectionString, deltaPath, dropDbOnPreDeltaChange, masterConnectionString, dbName, verbose));
+Index: SqlDeltaRunner.cs
+===================================================================
+--- SqlDeltaRunner.cs	(revision 2241)
++++ SqlDeltaRunner.cs	(working copy)
+@@ -49,7 +49,12 @@
+         {
+         }
+ 
+-        public SqlDeltaRunner(string connectionString, string deltaPath, bool dropDbOnPreDeltaChange,
++		public SqlDeltaRunner(string connectionString, string deltaPath, bool verbose, bool shouldRunPostDeltasAllTheTime)
++			: base(connectionString, deltaPath, verbose, shouldRunPostDeltasAllTheTime)
++		{
++		}
++
++		public SqlDeltaRunner(string connectionString, string deltaPath, bool dropDbOnPreDeltaChange,
+                                string masterConnectionString, string dbName, bool verbose) : base(connectionString, deltaPath, dropDbOnPreDeltaChange, masterConnectionString, dbName, verbose)
+         {
+         }
