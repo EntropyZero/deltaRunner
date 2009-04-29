@@ -192,7 +192,7 @@ namespace EntropyZero.deltaRunner
 	        {
 	            sql = sql + " --dataProfilerIgnore";
 	            SqlCommand cmd = new SqlCommand(sql, conn);
-	            cmd.CommandTimeout = 12000;
+	            cmd.CommandTimeout = CommandTimeout;
 	            conn.Open();
 	            SqlDataAdapter da = new SqlDataAdapter(cmd);
 	            DataSet ds = new DataSet();
@@ -204,7 +204,7 @@ namespace EntropyZero.deltaRunner
 	    protected override void UseCurrentDB(IDbConnection conn, IDbTransaction tran)
 	    {
 	        SqlCommand cmd = new SqlCommand(string.Format("USE [{0}]", dbName), (SqlConnection)conn, (SqlTransaction)tran);
-	        cmd.CommandTimeout = 12000;
+			cmd.CommandTimeout = CommandTimeout;
 	        cmd.ExecuteNonQuery();
 
 	    }
@@ -221,7 +221,7 @@ namespace EntropyZero.deltaRunner
 	            }
 	            string sqlstr = sqlString + " --dataProfilerIgnore";
 	            SqlCommand cmd = new SqlCommand(sqlstr, (SqlConnection)conn, (SqlTransaction)tran);
-	            cmd.CommandTimeout = 12000;
+				cmd.CommandTimeout = CommandTimeout;
 	            cmd.ExecuteNonQuery();
 	        }
 	    }
@@ -244,7 +244,7 @@ namespace EntropyZero.deltaRunner
 	            conn.Open();
 				
 	            SqlCommand cmdDrop = new SqlCommand(string.Format(dropSql, databaseName), conn);
-	            cmdDrop.CommandTimeout = 12000;
+				cmdDrop.CommandTimeout = CommandTimeout;
 	            cmdDrop.ExecuteNonQuery();
 	        }		
 	    }
@@ -266,7 +266,7 @@ namespace EntropyZero.deltaRunner
 	            conn.Open();
 				
 	            SqlCommand cmdCreate = new SqlCommand(string.Format(createSql, databaseName), conn);
-	            cmdCreate.CommandTimeout = 12000;
+				cmdCreate.CommandTimeout = CommandTimeout;
 	            cmdCreate.ExecuteNonQuery();
 	        }
 	    }
@@ -322,7 +322,7 @@ namespace EntropyZero.deltaRunner
 	                }
 	                string sqlstr = sqlString + " --dataProfilerIgnore";
 	                SqlCommand cmd = new SqlCommand(sqlstr, conn);
-	                cmd.CommandTimeout = 12000;
+					cmd.CommandTimeout = CommandTimeout;
 	                cmd.ExecuteNonQuery();
 	            }
 	        }
@@ -343,7 +343,7 @@ namespace EntropyZero.deltaRunner
 				}
 				string sqlstr = sqlString + " --dataProfilerIgnore";
 				SqlCommand cmd = new SqlCommand(sqlstr, (SqlConnection)conn, (SqlTransaction)tran);
-				cmd.CommandTimeout = 12000;
+				cmd.CommandTimeout = CommandTimeout;
 				cmd.ExecuteNonQuery();
 			}
 		}
@@ -354,7 +354,7 @@ namespace EntropyZero.deltaRunner
             {
                 sql = sql + " --dataProfilerIgnore";
                 SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.CommandTimeout = 12000;
+				cmd.CommandTimeout = CommandTimeout;
                 conn.Open();
                 return cmd.ExecuteScalar();
             }

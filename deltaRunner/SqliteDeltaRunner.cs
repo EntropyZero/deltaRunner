@@ -198,7 +198,7 @@ namespace EntropyZero.deltaRunner
             {
                 sql = sql + " --dataProfilerIgnore";
                 SqliteCommand cmd = new SqliteCommand(sql, conn);
-                cmd.CommandTimeout = 1200;
+				cmd.CommandTimeout = CommandTimeout;
                 conn.Open();
                 SqliteDataAdapter da = new SqliteDataAdapter(cmd);
                 DataSet ds = new DataSet();
@@ -223,7 +223,7 @@ namespace EntropyZero.deltaRunner
                         }
                         string sqlstr = sqlString + " --dataProfilerIgnore";
                         SqliteCommand cmd = new SqliteCommand(sqlstr, conn);
-                        cmd.CommandTimeout = 1200;
+						cmd.CommandTimeout = CommandTimeout;
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -248,7 +248,7 @@ namespace EntropyZero.deltaRunner
                 }
                 string sqlstr = sqlString + " --dataProfilerIgnore";
                 SqliteCommand cmd = new SqliteCommand(sqlstr, (SqliteConnection) conn, (SqliteTransaction) tran);
-                cmd.CommandTimeout = 1200;
+				cmd.CommandTimeout = CommandTimeout;
                 cmd.ExecuteNonQuery();
             }
         }
@@ -270,7 +270,7 @@ namespace EntropyZero.deltaRunner
                 }
                 string sqlstr = sqlString + " --dataProfilerIgnore";
                 SqliteCommand cmd = new SqliteCommand(sqlstr, (SqliteConnection)conn, (SqliteTransaction)tran);
-                cmd.CommandTimeout = 1200;
+				cmd.CommandTimeout = CommandTimeout;
                 cmd.ExecuteNonQuery();
             }
         }
@@ -313,7 +313,7 @@ namespace EntropyZero.deltaRunner
                         }
                         string sqlstr = sqlString + " --dataProfilerIgnore";
                         SqliteCommand cmd = new SqliteCommand(sqlstr, conn);
-                        cmd.CommandTimeout = 1200;
+						cmd.CommandTimeout = CommandTimeout;
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -336,7 +336,7 @@ namespace EntropyZero.deltaRunner
                 {
                     sql = sql + " --dataProfilerIgnore";
                     SqliteCommand cmd = new SqliteCommand(sql, conn);
-                    cmd.CommandTimeout = 1200;
+					cmd.CommandTimeout = CommandTimeout;
                     conn.Open();
                     retVal = cmd.ExecuteScalar();
                 }

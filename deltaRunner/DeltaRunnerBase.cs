@@ -29,8 +29,6 @@ namespace EntropyZero.deltaRunner
 {
     public abstract class DeltaRunnerBase
     {
-    	public bool ShouldRunPostDeltasAllTheTime { get; set; }
-
     	#region Events
 
         public event ScriptExecution OnScriptExecution;
@@ -52,6 +50,7 @@ namespace EntropyZero.deltaRunner
         protected DeltaRunnerType type = DeltaRunnerType.SqlServer;
         protected bool runInDevelopmentMode = false;
         protected bool useTransactions = true;
+		private int commandTimeout = 12000;
 
         #endregion
 
@@ -106,7 +105,15 @@ namespace EntropyZero.deltaRunner
 
         #region Public Properties
 
-        public bool RunInDevelopmentMode
+		public bool ShouldRunPostDeltasAllTheTime { get; set; }
+
+		public int CommandTimeout
+		{
+			get { return commandTimeout; }
+			set { commandTimeout = value; }
+		}
+		
+		public bool RunInDevelopmentMode
         {
             get { return runInDevelopmentMode; }
             set { runInDevelopmentMode = value; }
