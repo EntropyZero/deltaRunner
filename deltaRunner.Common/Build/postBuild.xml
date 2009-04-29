@@ -25,7 +25,7 @@
 	</target>
 	<target name="Deploy.Solution">
 		<echo message="Deply to : ${OutputDirectory}" />
-		<delete dir="${OutputDirectory}" failonerror="false" />
+		<delete dir="${OutputDirectory}\Package" failonerror="false" />
 		<mkdir dir="${OutputDirectory}\Package" failonerror="false" />
 		<mkdir dir="${OutputDirectory}\Package\Nant" failonerror="false" />
 		<copy todir="${OutputDirectory}\Package" overwrite="true">
