@@ -111,6 +111,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AlwaysRunPostDeltas.cs" />
     <Compile Include="SkipingPostDeltas.cs" />
     <Compile Include="DeltaFileTester.cs" />
     <Compile Include="FullDeltaRunnerTest4.cs" />

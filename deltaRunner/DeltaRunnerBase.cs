@@ -454,7 +454,7 @@ namespace EntropyZero.deltaRunner
                 {
                     DateTime start = DateTime.Now;
 
-                    if (deltaFile.Version != "-1" || deltaFile.IsModified ||
+                    if (deltaFile.Version != "-1" || ShouldRunPostDeltasAllTheTime || deltaFile.IsModified ||
                         (deltaFile.Category == null || runningState.Categories[deltaFile.Category] == null || (int) runningState.Categories[deltaFile.Category] != runningState.CategoryCounter))
                     {
                         if (deltaFile.IsModified && deltaFile.Category != null)
