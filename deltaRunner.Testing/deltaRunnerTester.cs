@@ -317,5 +317,23 @@ namespace EntropyZero.deltaRunner.Testing
 			Assert.AreEqual(true, deltaCalled);
 			Assert.AreEqual(true, postCalled);
 		}
+
+        [Test]
+		public void ShouldBeAbleToAddPostDeltaAfterMainDeltasAreRun()
+		{
+        	bool deltaExecuted = false;
+			deltaRunner.RemoveDeltaRunner();
+			deltaRunner.PrepareForDeltaRunner();
+			deltaRunner.OnDeltaFinish += (o, e) => deltaRunner.AddSqlFile(new FileInfo("../../TestFiles/SampleStaticFile1.sql"), SqlFileExecutionOption.ExecuteAfterDeltas, false);
+			deltaRunner.OnScriptExecution += o =>
+			                                 	{
+													if (o.Delta.Filename == "SampleStaticFile1.sql")
+													{
+														deltaExecuted = true;
+													}
+			                                 	};
+			deltaRunner.ApplyDeltas();
+			Assert.AreEqual(true, deltaExecuted);
+		}
 	}
 }
