@@ -142,30 +142,26 @@ namespace EntropyZero.deltaRunner
 
         public void PrepareForDeltaRunner()
         {
-            DateTime before = DateTime.Now;
-            ConsoleWrite("PrepareForDeltaRunner Started");
+            ConsoleWrite("--== Preparing deltaRunner  ==--");
             using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(PrepareScriptResourceName))
             {
                 using (StreamReader sr = new StreamReader(stream))
                 {
                     string cmd = sr.ReadToEnd();
                     RunSqlScript(string.Format(cmd, DeltaVersionTableName, DeltaVersionColumnName));
-                    ConsoleWrite("PrepareForDeltaRunner Complete : " + (DateTime.Now - before));
                 }
             }
         }
 
         public void RemoveDeltaRunner()
         {
-            DateTime before = DateTime.Now;
-            ConsoleWrite("RemoveDeltaRunner Started");
+			ConsoleWrite("--=== Removing deltaRunner ===--");
             using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(RemoveScriptResourceName))
             {
                 using (StreamReader sr = new StreamReader(stream))
                 {
                     string cmd = sr.ReadToEnd();
                     RunSqlScript(string.Format(cmd, DeltaVersionTableName, DeltaVersionColumnName));
-                    ConsoleWrite("RemoveDeltaRunner Complete : " + (DateTime.Now - before));
                 }
             }
         }
@@ -303,6 +299,7 @@ namespace EntropyZero.deltaRunner
 		
 		private void RunPreDeltaProcess(RunningState runningState)
     	{
+			ConsoleWrite("--== Processing Pre-Deltas  ==--");
 			ResetRunningState(runningState, true);
     		LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, sqlFilePreDeltaQueue);
 			DetermineWhichDeltasToRunAndQueueThem(runningState);
@@ -311,6 +308,7 @@ namespace EntropyZero.deltaRunner
 
     	private void RunDeltaProcess(RunningState runningState)
     	{
+			ConsoleWrite("--==== Processing Deltas  ====--");
 			ResetRunningState(runningState, false);
 			Queue deltaFiles = EnqueueDeltas(runningState);
 			LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, deltaFiles); 
@@ -321,6 +319,7 @@ namespace EntropyZero.deltaRunner
 
 		private void RunPostDeltaProcess(RunningState runningState)
 		{
+			ConsoleWrite("--== Processing Post-Deltas ==--");
 			ResetRunningState(runningState, false);
 			LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, sqlFilePostDeltaQueue);
 			DetermineWhichDeltasToRunAndQueueThem(runningState);

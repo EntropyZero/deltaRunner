@@ -96,3 +96,18 @@ IF EXISTS
 			END
 		END
 GO
+
+IF NOT EXISTS
+        (
+                SELECT * FROM SysObjects O INNER JOIN SysColumns C ON O.ID=C.ID
+                WHERE 
+                        ObjectProperty(O.ID,'IsUserTable')=1 
+                        AND 
+                        O.Name='{0}' 
+                        AND 
+                        C.Name='DateRun' 
+        )
+        BEGIN
+ 			ALTER TABLE [dbo].[{0}] ADD DateRun DateTime Default(GetDate())
+		END
+GO
