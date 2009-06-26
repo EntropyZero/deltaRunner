@@ -600,19 +600,8 @@ namespace EntropyZero.deltaRunner
             {
                 using (StreamReader deltaReader = new StreamReader(deltaStream))
                 {
-                    //string endXmlTag = "</deltarunner>";
                     string deltaText = deltaReader.ReadToEnd();
                     return deltaText;
-                    //int locOfEndXml = deltaText.ToLower().IndexOf(endXmlTag);
-                    //if (locOfEndXml > 0)
-                    //{
-                    //    deltaText = deltaText.Substring(locOfEndXml + endXmlTag.Length);
-                    //    return deltaText;
-                    //}
-                    //else
-                    //{
-                    //    return deltaText;
-                    //}
                 }
             }
         }
