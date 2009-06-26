@@ -300,5 +300,22 @@ namespace EntropyZero.deltaRunner.Testing
             Assert.AreEqual("002.sql", sortedFiles[1].Name);
             Assert.AreEqual("020.sql", sortedFiles[2].Name);
 	    }
+
+        [Test]
+		public void ShouldCallAllEvents()
+		{
+        	bool preCalled = false;
+        	bool deltaCalled = false;
+        	bool postCalled = false;
+			deltaRunner.RemoveDeltaRunner();
+			deltaRunner.PrepareForDeltaRunner();
+			deltaRunner.OnPreDeltaFinish += (o, e) => preCalled = true;
+			deltaRunner.OnDeltaFinish += (o, e) => deltaCalled = true;
+			deltaRunner.OnPostDeltaFinish += (o, e) => postCalled = true; 
+			deltaRunner.ApplyDeltas();
+			Assert.AreEqual(true, preCalled);
+			Assert.AreEqual(true, deltaCalled);
+			Assert.AreEqual(true, postCalled);
+		}
 	}
 }

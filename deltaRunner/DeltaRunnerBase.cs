@@ -34,6 +34,9 @@ namespace EntropyZero.deltaRunner
         public event ScriptExecution OnScriptExecution;
         public event ScriptExecution OnAfterScriptExecution;
         public event ScriptExecution OnSkipScriptExecution;
+    	public event EventHandler OnPreDeltaFinish;
+    	public event EventHandler OnDeltaFinish;
+    	public event EventHandler OnPostDeltaFinish;
 
         protected abstract IDbConnection CreateConnection();
 
@@ -304,6 +307,10 @@ namespace EntropyZero.deltaRunner
     		LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, sqlFilePreDeltaQueue);
 			DetermineWhichDeltasToRunAndQueueThem(runningState);
 			RunTheQueuedDeltas(runningState);
+			if (OnPreDeltaFinish != null)
+			{
+				OnPreDeltaFinish(this, EventArgs.Empty);
+			}
 		}
 
     	private void RunDeltaProcess(RunningState runningState)
@@ -315,6 +322,10 @@ namespace EntropyZero.deltaRunner
     		DetermineWhichDeltasToRunAndQueueThem(runningState);
     		IfInDevelopmentModeDeleteVersionsThatNeedToBeReRun(runningState);
     		RunTheQueuedDeltas(runningState);
+			if (OnDeltaFinish != null)
+			{
+				OnDeltaFinish(this, EventArgs.Empty);
+			}
     	}
 
 		private void RunPostDeltaProcess(RunningState runningState)
@@ -326,6 +337,10 @@ namespace EntropyZero.deltaRunner
 			DeletePostDeltasThatNeedToBeReRun(runningState);
 			IfInDevelopmentModeDeleteVersionsThatNeedToBeReRun(runningState);
 			RunTheQueuedDeltas(runningState);
+			if (OnPostDeltaFinish != null)
+			{
+				OnPostDeltaFinish(this, EventArgs.Empty);
+			}
 		}
 
 		private static void DoesDeltaFolderExist(RunningState runningState)
