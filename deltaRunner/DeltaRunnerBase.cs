@@ -292,6 +292,7 @@ namespace EntropyZero.deltaRunner
 			runningState.LatestVersion = GetLatestVersion(runningState.CurrentConnection, runningState.CurrentTransaction);
 			runningState.QueuedFiles = null;
 			runningState.ReRunDelta = false;
+			runningState.DeltaFiles = null;
 			if(resetCategories)
 			{
 				runningState.Categories = new Hashtable();
