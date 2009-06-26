@@ -1,2 +1,1 @@
-1) Add switch to hide modified delta detected message.
-2) Clean up test project and ugly tangle of deltas in test fixture.
+1) Clean up test project and ugly tangle of deltas in test fixture.

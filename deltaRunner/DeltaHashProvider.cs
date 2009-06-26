@@ -80,7 +80,7 @@ namespace EntropyZero.deltaRunner
 			}
 			string knownHash = HashCodes[delta].ToString();
 			bool hashCodesMatch = knownHash == hashCode;
-			if(!hashCodesMatch)
+			if(!hashCodesMatch && deltaRunner.RunInDevelopmentMode)
 			{
                 deltaRunner.ConsoleWrite("Modified Delta Detected : {0}", delta.ToString());
 			}
