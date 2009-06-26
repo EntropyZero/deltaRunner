@@ -232,6 +232,10 @@ namespace EntropyZero.deltaRunner
                 	RunPreDeltaProcess(runningState);
 					if (runningState.ShouldDropAndRecreate)
 					{
+						if(runningState.CurrentTransaction != null)
+						{
+							runningState.CurrentTransaction.Commit();
+						}
 						DropAndRecreate();
 						return ApplyDeltas(runningState.IgnoreExceptions);
 					}
@@ -284,19 +288,22 @@ namespace EntropyZero.deltaRunner
         }
 
 
-		private void ResetRunningState(RunningState runningState)
+		private void ResetRunningState(RunningState runningState, bool resetCategories)
 		{
 			runningState.LatestVersion = GetLatestVersion(runningState.CurrentConnection, runningState.CurrentTransaction);
 			runningState.QueuedFiles = null;
 			runningState.ReRunDelta = false;
-			runningState.Categories = new Hashtable();
-			runningState.CategoryCounter = 0;
+			if(resetCategories)
+			{
+				runningState.Categories = new Hashtable();
+				runningState.CategoryCounter = 0;
+			}
 			runningState.PostDeltaFilenamesToDelete = new StringBuilder();
 		}
 		
 		private void RunPreDeltaProcess(RunningState runningState)
     	{
-			ResetRunningState(runningState);
+			ResetRunningState(runningState, true);
     		LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, sqlFilePreDeltaQueue);
 			DetermineWhichDeltasToRunAndQueueThem(runningState);
 			RunTheQueuedDeltas(runningState);
@@ -304,7 +311,7 @@ namespace EntropyZero.deltaRunner
 
     	private void RunDeltaProcess(RunningState runningState)
     	{
-			ResetRunningState(runningState);
+			ResetRunningState(runningState, false);
 			Queue deltaFiles = EnqueueDeltas(runningState);
 			LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, deltaFiles); 
     		DetermineWhichDeltasToRunAndQueueThem(runningState);
@@ -314,7 +321,7 @@ namespace EntropyZero.deltaRunner
 
 		private void RunPostDeltaProcess(RunningState runningState)
 		{
-			ResetRunningState(runningState);
+			ResetRunningState(runningState, false);
 			LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, sqlFilePostDeltaQueue);
 			DetermineWhichDeltasToRunAndQueueThem(runningState);
 			DeletePostDeltasThatNeedToBeReRun(runningState);
