@@ -126,9 +126,23 @@ namespace EntropyZero.deltaRunner
 	        return(ExecuteScalar("select DB_NAME()").ToString());
 	    }
 
-	    public override string GetLatestVersion()
+		public override string GetLatestVersion()
+		{
+			return GetLatestVersion(null, null);
+		}
+
+		public override string GetLatestVersion(IDbConnection conn, IDbTransaction tran)
 	    {
-	        object scalar = ExecuteScalar(string.Format("SELECT ISNULL(MAX({0}),'0') FROM [{1}]", DeltaVersionColumnName, DeltaVersionTableName));
+			object scalar = null;
+			string sql = string.Format("SELECT ISNULL(MAX({0}),'0') FROM [{1}]", DeltaVersionColumnName, DeltaVersionTableName);
+			if (conn == null)
+			{
+				scalar = ExecuteScalar(sql);
+			}
+			else
+			{
+				scalar = ExecuteScalar(sql, conn, tran);
+			}
 	        if (scalar == null || scalar is DBNull) return "0";
 	        return scalar.ToString();
 	    }
@@ -352,12 +366,17 @@ namespace EntropyZero.deltaRunner
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                sql = sql + " --dataProfilerIgnore";
-                SqlCommand cmd = new SqlCommand(sql, conn);
-				cmd.CommandTimeout = CommandTimeout;
-                conn.Open();
-                return cmd.ExecuteScalar();
-            }
+				conn.Open();
+            	return ExecuteScalar(sql, conn, null);
+			}
+		}
+
+		private object ExecuteScalar(string sql, IDbConnection conn, IDbTransaction tran)
+        {
+            sql = sql + " --dataProfilerIgnore";
+			SqlCommand cmd = new SqlCommand(sql, (SqlConnection)conn, (SqlTransaction)tran);
+			cmd.CommandTimeout = CommandTimeout;
+            return cmd.ExecuteScalar();
         }
 
 	    #endregion

@@ -96,10 +96,23 @@ namespace EntropyZero.deltaRunner
             return connectionString;
         }
 
-        public override string GetLatestVersion()
+		public override string GetLatestVersion()
+		{
+			return GetLatestVersion(null, null);
+		}
+	
+		public override string GetLatestVersion(IDbConnection conn, IDbTransaction tran)
         {
-            object scalar =
-                ExecuteScalar(string.Format("SELECT MAX({0}) FROM [{1}]", DeltaVersionColumnName, DeltaVersionTableName));
+			object scalar = null;
+			string sql = string.Format("SELECT MAX({0}) FROM [{1}]", DeltaVersionColumnName, DeltaVersionTableName);
+			if(conn == null)
+			{
+				scalar = ExecuteScalar(sql);
+			}
+			else
+			{
+				scalar = ExecuteScalar(sql, conn, tran);
+			}
             if (scalar == null || scalar is DBNull) return "0";
             return scalar.ToString();
         }
@@ -350,5 +363,14 @@ namespace EntropyZero.deltaRunner
                 return retVal;
             }
         }
+
+
+		private object ExecuteScalar(string sql, IDbConnection conn, IDbTransaction tran)
+		{
+			sql = sql + " --dataProfilerIgnore";
+			SqliteCommand cmd = new SqliteCommand(sql, (SqliteConnection)conn, tran);
+			cmd.CommandTimeout = CommandTimeout;
+			return cmd.ExecuteScalar();
+		}
     }
 }

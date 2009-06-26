@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Data;
 using System.IO;
 using System.Text;
 
@@ -18,8 +19,11 @@ namespace EntropyZero.deltaRunner
         private int categoryCounter = 0;
         private string latestVersion;
         private DeltaHashProvider hashProvider;
-        
-        public RunningState(string deltaPath)
+    	private bool _ignoreExceptions;
+    	private IDbConnection _currentConnection;
+    	private IDbTransaction _currentTransaction;
+
+    	public RunningState(string deltaPath)
         {
             deltaFolder = new DirectoryInfo(deltaPath);
         }
@@ -95,5 +99,23 @@ namespace EntropyZero.deltaRunner
             get { return sbPostDeltaFilenamesToDelete; }
             set { sbPostDeltaFilenamesToDelete = value; }
         }
+
+    	public bool IgnoreExceptions
+    	{
+    		get { return _ignoreExceptions; }
+    		set { _ignoreExceptions = value; }
+    	}
+
+    	public IDbConnection CurrentConnection
+    	{
+    		get { return _currentConnection; }
+    		set { _currentConnection = value; }
+    	}
+
+    	public IDbTransaction CurrentTransaction
+    	{
+    		get { return _currentTransaction; }
+    		set { _currentTransaction = value; }
+    	}
     }
 }

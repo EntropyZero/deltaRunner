@@ -129,6 +129,7 @@ namespace EntropyZero.deltaRunner
 
         #region Public Abstract Methods
 
+        public abstract string GetLatestVersion(IDbConnection conn, IDbTransaction tran);
         public abstract string GetLatestVersion();
 
         public abstract string GetDbName();
@@ -207,6 +208,7 @@ namespace EntropyZero.deltaRunner
         public bool ApplyDeltas(bool ignoreExceptions)
         {
             RunningState runningState = new RunningState(deltaPath);
+        	runningState.IgnoreExceptions = ignoreExceptions;
 
             DoesDeltaFolderExist(runningState);
             CheckThatdeltaRunnerTablesAreSetUp();
@@ -216,45 +218,41 @@ namespace EntropyZero.deltaRunner
             DataTable deltaTable = GetDeltaTable();
             runningState.HashProvider.CacheDeltaRunnerHashCodes(deltaTable.Select());
 
-            using (IDbConnection conn = CreateConnection())
+			using (runningState.CurrentConnection = CreateConnection())
             {
-                conn.Open();
-                IDbTransaction tran = null;
+				runningState.CurrentConnection.Open();
+				runningState.CurrentTransaction = null;
                 if (UseTransactions)
                 {
-                    tran = conn.BeginTransaction(IsolationLevel.Serializable);
+					runningState.CurrentTransaction = runningState.CurrentConnection.BeginTransaction(IsolationLevel.Serializable);
                 }
 
                 try
                 {
-                    LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState); 
-                    runningState.LatestVersion = GetLatestVersion();
-                    DetermineWhichDeltasToRunAndQueueThem(runningState);
-                    if(runningState.ShouldDropAndRecreate)
-                    {
-                        DropAndRecreate();
-                        return (ApplyDeltas(ignoreExceptions));
-                    }
+                	RunPreDeltaProcess(runningState);
+					if (runningState.ShouldDropAndRecreate)
+					{
+						DropAndRecreate();
+						return ApplyDeltas(runningState.IgnoreExceptions);
+					}
+					RunDeltaProcess(runningState);
+					RunPostDeltaProcess(runningState);
 
-                    DeletePostDeltasThatNeedToBeReRun(runningState, conn, tran);
-                    IfInDevelopmentModeDeleteVersionsThatNeedToBeReRun(runningState, conn, tran);
-                    RunTheQueuedDeltas(runningState, conn, ref tran);
-                    
-                    if (runningState.SchemaModified)
+                	if (runningState.SchemaModified)
                         ConsoleWrite("Deltas have been applied.");
 
-                    if (tran != null)
+					if (runningState.CurrentTransaction != null)
                     {
-                        tran.Commit();
+						runningState.CurrentTransaction.Commit();
                     }
 
                 }
                 catch (SqlException ex)
                 {
                     Console.Out.WriteLine("SqlException Occured	-->	{0}", ex);
-                    if (tran != null)
+					if (runningState.CurrentTransaction != null)
                     {
-                        tran.Rollback();
+						runningState.CurrentTransaction.Rollback();
                     }
                     if (!ignoreExceptions)
                     {
@@ -265,9 +263,9 @@ namespace EntropyZero.deltaRunner
                 catch (Exception ex)
                 {
                     Console.Out.WriteLine("deltaRunner Exception Occured --> {0}", ex);
-                    if (tran != null)
+					if (runningState.CurrentTransaction != null)
                     {
-                        tran.Rollback();
+						runningState.CurrentTransaction.Rollback();
                     }
                     if (!ignoreExceptions)
                     {
@@ -276,16 +274,55 @@ namespace EntropyZero.deltaRunner
                 }
                 finally
                 {
-                    if (conn.State != ConnectionState.Closed)
+					if (runningState.CurrentConnection.State != ConnectionState.Closed)
                     {
-                        conn.Close();
+						runningState.CurrentConnection.Close();
                     }
                 }
             }
             return runningState.SchemaModified;
         }
 
-        private static void DoesDeltaFolderExist(RunningState runningState)
+
+		private void ResetRunningState(RunningState runningState)
+		{
+			runningState.LatestVersion = GetLatestVersion(runningState.CurrentConnection, runningState.CurrentTransaction);
+			runningState.QueuedFiles = null;
+			runningState.ReRunDelta = false;
+			runningState.Categories = new Hashtable();
+			runningState.CategoryCounter = 0;
+			runningState.PostDeltaFilenamesToDelete = new StringBuilder();
+		}
+		
+		private void RunPreDeltaProcess(RunningState runningState)
+    	{
+			ResetRunningState(runningState);
+    		LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, sqlFilePreDeltaQueue);
+			DetermineWhichDeltasToRunAndQueueThem(runningState);
+			RunTheQueuedDeltas(runningState);
+		}
+
+    	private void RunDeltaProcess(RunningState runningState)
+    	{
+			ResetRunningState(runningState);
+			Queue deltaFiles = EnqueueDeltas(runningState);
+			LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, deltaFiles); 
+    		DetermineWhichDeltasToRunAndQueueThem(runningState);
+    		IfInDevelopmentModeDeleteVersionsThatNeedToBeReRun(runningState);
+    		RunTheQueuedDeltas(runningState);
+    	}
+
+		private void RunPostDeltaProcess(RunningState runningState)
+		{
+			ResetRunningState(runningState);
+			LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(runningState, sqlFilePostDeltaQueue);
+			DetermineWhichDeltasToRunAndQueueThem(runningState);
+			DeletePostDeltasThatNeedToBeReRun(runningState);
+			IfInDevelopmentModeDeleteVersionsThatNeedToBeReRun(runningState);
+			RunTheQueuedDeltas(runningState);
+		}
+
+		private static void DoesDeltaFolderExist(RunningState runningState)
         {
             if (!runningState.DeltaFolder.Exists)
             {
@@ -322,44 +359,42 @@ namespace EntropyZero.deltaRunner
             }
         }
 
-        private void LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(RunningState runningState)
+        private void LoadFilesIntoListOrderedCorrectlyAndCheckIfModified(RunningState runningState, Queue sqlDeltaFileQueue)
         {
-            FileInfo[] sqlFiles = runningState.DeltaFolder.GetFiles("*.sql");
-            sqlFiles = SortByFilename(sqlFiles);
-
             ArrayList files = new ArrayList();
-            foreach (object fileQueue in sqlFilePreDeltaQueue)
-            {
-                DeltaFile deltaFile = (DeltaFile) fileQueue;
-                deltaFile.CalculateHash();
-                deltaFile.IsModified = !runningState.HashProvider.CheckDeltaHash(deltaFile.Filename, deltaFile.Hash);
-                files.Add(deltaFile);
-            }
-
-            foreach (FileInfo info in sqlFiles)
-            {
-                DeltaFile deltaFile = new DeltaFile(info);
-                deltaFile.CalculateHash();
-                deltaFile.IsModified = !runningState.HashProvider.CheckDeltaHash(deltaFile.Filename, deltaFile.Hash);
-                files.Add(deltaFile);
-            }
-
-            foreach (object fileQueue in sqlFilePostDeltaQueue)
-            {
-                DeltaFile deltaFile = (DeltaFile) fileQueue;
-                deltaFile.CalculateHash();
-                deltaFile.IsModified = !runningState.HashProvider.CheckDeltaHash(deltaFile.Filename, deltaFile.Hash);
-                files.Add(deltaFile);
-            }
-
+			GetAndPrepareDeltaFiles(runningState, files, sqlDeltaFileQueue);
             runningState.DeltaFiles = (DeltaFile[])files.ToArray(typeof(DeltaFile));
         }
 
-        private void DetermineWhichDeltasToRunAndQueueThem(RunningState runningState) 
+    	private Queue EnqueueDeltas(RunningState runningState)
+    	{
+    		FileInfo[] sqlFiles = runningState.DeltaFolder.GetFiles("*.sql");
+    		sqlFiles = SortByFilename(sqlFiles);
+    		Queue deltaFiles = new Queue();
+    		foreach (FileInfo file in sqlFiles)
+    		{
+    			DeltaFile deltaFile = new DeltaFile(file);
+    			deltaFiles.Enqueue(deltaFile);
+    		}
+    		return deltaFiles;
+    	}
+
+    	private void GetAndPrepareDeltaFiles(RunningState runningState, ArrayList files, Queue fileQueue)
+    	{
+			foreach (object fileQueueFile in fileQueue)
+    		{
+				DeltaFile deltaFile = (DeltaFile)fileQueueFile;
+    			deltaFile.CalculateHash();
+    			deltaFile.IsModified = !runningState.HashProvider.CheckDeltaHash(deltaFile.Filename, deltaFile.Hash);
+    			files.Add(deltaFile);
+    		}
+    	}
+
+    	private void DetermineWhichDeltasToRunAndQueueThem(RunningState runningState) 
         {
             foreach (DeltaFile deltaFile in runningState.DeltaFiles)
             {
-                if (runningState.QueuedFiles != null ||
+				if (runningState.SchemaModified || runningState.QueuedFiles != null ||
                     (RunInDevelopmentMode && deltaFile.IsModified) ||
                     IsDeltaBiggerThen(deltaFile, runningState.LatestVersion) || runningState.LatestVersion == "0" || (ShouldRunPostDeltasAllTheTime && deltaFile.Version == "-1"))
                 {
@@ -417,7 +452,7 @@ namespace EntropyZero.deltaRunner
             }
         }
 
-        private void IfInDevelopmentModeDeleteVersionsThatNeedToBeReRun(RunningState runningState, IDbConnection conn, IDbTransaction tran)
+        private void IfInDevelopmentModeDeleteVersionsThatNeedToBeReRun(RunningState runningState)
         {
             ArrayList queuedFiles = runningState.QueuedFiles;
             if (RunInDevelopmentMode && queuedFiles != null)
@@ -425,26 +460,26 @@ namespace EntropyZero.deltaRunner
                 DeltaFile firstFile = (DeltaFile) queuedFiles[0];
                 if (firstFile.Version == "-2")
                 {
-                    DeleteVersionTable(conn, tran);
+					DeleteVersionTable(runningState.CurrentConnection, runningState.CurrentTransaction);
                 }
                 else if (runningState.ReRunDelta)
                 {
-                    DeleteNewerDeltas(conn, runningState.LatestVersion, tran);
+					DeleteNewerDeltas(runningState.CurrentConnection, runningState.LatestVersion, runningState.CurrentTransaction);
                 }
             }
         }
 
-        private void DeletePostDeltasThatNeedToBeReRun(RunningState runningState, IDbConnection conn, IDbTransaction tran)
+        private void DeletePostDeltasThatNeedToBeReRun(RunningState runningState)
         {
             StringBuilder sbPostFilename = runningState.PostDeltaFilenamesToDelete;
             if (sbPostFilename.Length > 0)
             {
                 sbPostFilename = sbPostFilename.Remove(sbPostFilename.Length - 1, 1);
-                DeletePostDeltas(conn, sbPostFilename, tran);
+				DeletePostDeltas(runningState.CurrentConnection, sbPostFilename, runningState.CurrentTransaction);
             }
         }
 
-        private void RunTheQueuedDeltas(RunningState runningState, IDbConnection conn, ref IDbTransaction tran)
+        private void RunTheQueuedDeltas(RunningState runningState)
         {
             ArrayList queuedFiles = runningState.QueuedFiles;
             if (queuedFiles == null)
@@ -482,17 +517,17 @@ namespace EntropyZero.deltaRunner
                         {
                             ConsoleWrite("Running Delta : {0}", deltaFile.Filename);
 
-                            ExecuteNonQueryWithDBReset(fileContents, conn, tran);
+							ExecuteNonQueryWithDBReset(fileContents, runningState.CurrentConnection, runningState.CurrentTransaction);
                             if (RunInDevelopmentMode)
                             {
                                 // In DEV mode, we run twice to ensure our deltas are repeatable.
-                                ExecuteNonQueryWithDBReset(fileContents, conn, tran);
+								ExecuteNonQueryWithDBReset(fileContents, runningState.CurrentConnection, runningState.CurrentTransaction);
                             }
                         }
                         else
                         {
                             ConsoleWrite("Commiting Transaction for a non transactional delta.");
-                            tran.Commit();
+							runningState.CurrentTransaction.Commit();
                             ConsoleWrite("Running Delta : {0}", deltaFile.Filename);
                             ExecuteNonQuery(fileContents);
                             if (RunInDevelopmentMode)
@@ -502,12 +537,12 @@ namespace EntropyZero.deltaRunner
                             }
 
                             ConsoleWrite("Starting new Transaction.");
-                            conn.Close();
-                            conn.Open();
-                            tran = conn.BeginTransaction(IsolationLevel.Serializable);
+							runningState.CurrentConnection.Close();
+							runningState.CurrentConnection.Open();
+							runningState.CurrentTransaction = runningState.CurrentConnection.BeginTransaction(IsolationLevel.Serializable);
                         }
 
-                        AddDeltaToTrackingTable(conn, deltaFile, tran);
+						AddDeltaToTrackingTable(runningState.CurrentConnection, deltaFile, runningState.CurrentTransaction);
 
                         if (OnAfterScriptExecution != null)
                         {
@@ -522,7 +557,7 @@ namespace EntropyZero.deltaRunner
                             OnSkipScriptExecution(new ScriptExecutionArgs(deltaFile, DateTime.Now - start));
                         }
 
-                        AddDeltaToTrackingTable(conn, deltaFile, tran);
+						AddDeltaToTrackingTable(runningState.CurrentConnection, deltaFile, runningState.CurrentTransaction);
                     }
                 }
             }
