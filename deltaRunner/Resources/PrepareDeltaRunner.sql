@@ -64,9 +64,9 @@ IF EXISTS
                         C.Name='tmpId' 
         )
         BEGIN
- 			UPDATE [dbo].[{0}] SET tmpId = CASE when filename is null then '0' else LEFT(Filename, LEN(Filename) - 4) END
- 			UPDATE [dbo].[{0}] SET tmpId = {1} WHERE {1} IN (-1,-2)  			
- 			ALTER TABLE [dbo].[{0}] DROP COLUMN [{1}]
+ 			EXEC sp_executesql N'UPDATE [dbo].[{0}] SET tmpId = CASE when filename is null then ''0'' else LEFT(Filename, LEN(Filename) - 4) END'
+ 			EXEC sp_executesql N'UPDATE [dbo].[{0}] SET tmpId = {1} WHERE {1} IN (-1,-2)'  			
+ 			EXEC sp_executesql N'ALTER TABLE [dbo].[{0}] DROP COLUMN [{1}]'
 		END
 GO
 
