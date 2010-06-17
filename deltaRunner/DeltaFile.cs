@@ -33,6 +33,7 @@ namespace EntropyZero.deltaRunner
 		public SqlFileExecutionOption Option;
 		public bool UseTransaction;
 	    private bool isModified = false;
+		public bool ForceRunOnceInDevelopment = false;
 
 	    public string Category;
 	    public StringCollection MaySkipCategories = new StringCollection();
@@ -145,6 +146,9 @@ namespace EntropyZero.deltaRunner
                         break;
                     case "usetransaction":
                         UseTransaction = Convert.ToBoolean(xmlNode.InnerXml);
+                        break;
+					case "forcerunonceindevelopment":
+                        ForceRunOnceInDevelopment = Convert.ToBoolean(xmlNode.InnerXml);
                         break;
                     case "mayskipcategories":
                         foreach(XmlNode skipCatNode in xmlNode.ChildNodes)

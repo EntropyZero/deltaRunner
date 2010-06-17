@@ -540,7 +540,7 @@ namespace EntropyZero.deltaRunner
                             ConsoleWrite("Running Delta : {0}", deltaFile.Filename);
 
 							ExecuteNonQueryWithDBReset(fileContents, runningState.CurrentConnection, runningState.CurrentTransaction);
-                            if (RunInDevelopmentMode)
+							if (RunInDevelopmentMode && !deltaFile.ForceRunOnceInDevelopment)
                             {
                                 // In DEV mode, we run twice to ensure our deltas are repeatable.
 								ExecuteNonQueryWithDBReset(fileContents, runningState.CurrentConnection, runningState.CurrentTransaction);
@@ -552,7 +552,7 @@ namespace EntropyZero.deltaRunner
 							runningState.CurrentTransaction.Commit();
                             ConsoleWrite("Running Delta : {0}", deltaFile.Filename);
                             ExecuteNonQuery(fileContents);
-                            if (RunInDevelopmentMode)
+                            if (RunInDevelopmentMode && !deltaFile.ForceRunOnceInDevelopment)
                             {
                                 // In DEV mode, we run twice to ensure our deltas are repeatable.
                                 ExecuteNonQuery(fileContents);
